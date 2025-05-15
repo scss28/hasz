@@ -1,5 +1,5 @@
 # hasz
-
+Fast, multithreaded hash cracking tool.
 
 ## Building and running
 ### Prerequisites
