@@ -55,14 +55,46 @@ fn fatal(comptime fmt: []const u8, args: anytype) noreturn {
     process.exit(1);
 }
 
+const help =
+    \\Usage: {s} [command] [options] [string]
+    \\
+    \\Commands:
+    \\
+    \\  help        Print this help and exit
+    \\  md5         
+    \\  sha1        
+    \\  sha256      
+    \\  sha384      
+    \\  sha512      
+    \\  sha3_512    
+    \\  blake3      
+    \\  bcrypt      
+    \\
+    \\Options
+    \\
+    \\  -l={{s}} (required) The path to password list
+    \\  -t={{d}}            How many threads to use
+    \\
+    \\
+;
+
 pub fn main() !void {
     const gpa = heap.smp_allocator;
     const stdout = io.getStdOut().writer();
 
     var args: process.ArgIterator = try .initWithAllocator(gpa);
-    _ = args.skip();
+    const program = args.next() orelse "hasz";
 
-    const arg0 = args.next() orelse fatal("expected at least 2 arguments", .{});
+    const arg0 = args.next() orelse {
+        try stdout.print(help, .{program});
+        fatal("expected a command", .{});
+    };
+
+    if (mem.eql(u8, arg0, "help")) {
+        try stdout.print(help, .{program});
+        return;
+    }
+
     const hash_tag = meta.stringToEnum(HashTag, arg0) orelse {
         fatal("unexpected hash name '{s}'", .{arg0});
     };
