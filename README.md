@@ -1,5 +1,5 @@
 # hasz
-
+Fast, multithreaded hash cracking tool.
 
 ## Building and running
 ### Prerequisites
@@ -23,5 +23,5 @@ hasz bcrypt -l=rockyou-75.txt "\$2a\$12\$GZcp1ScNwZ762Vtb/6sbOOsUz1RzBuwUofk8jx9
 ```
 
 ```
-zig-out/bin/hasz md5 -l=zig-out/rockyou.txt 498c9984309d201da4ad7f354b5ce5d0
+hasz md5 -l=rockyou.txt 498c9984309d201da4ad7f354b5ce5d0
 ```
