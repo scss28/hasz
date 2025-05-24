@@ -128,6 +128,8 @@ pub fn main() !void {
         fatal("list file path not provided (-l)", .{});
     };
 
+    try stdout.print("\x1b[90;3mloading list file...\x1b[m", .{});
+
     const bytes = try fs.cwd().readFileAlloc(gpa, list_path, 256_000_000);
     const entries = blk: {
         var entries: std.ArrayListUnmanaged([]const u8) = .{};
@@ -275,11 +277,11 @@ pub fn main() !void {
     try stdout.print("\x1b[2K\r\x1b[1m{s}\x1b[m ", .{c});
 
     const ms = (try time.Instant.now()).since(now) / time.ns_per_ms;
-    if (ms < 1_000) try stdout.print("\x1b[90;3m~{d} ms\x1b[m", .{ms}) else {
+    if (ms < 1_000) try stdout.print("\x1b[90;3m{d} ms\x1b[m", .{ms}) else {
         const s = @as(f32, @floatFromInt(ms)) / time.ms_per_s;
-        if (s < 60) try stdout.print("\x1b[90;3m~{d:.2} s\x1b[m", .{s}) else {
+        if (s < 60) try stdout.print("\x1b[90;3m{d:.2} s\x1b[m", .{s}) else {
             const min: u32 = @intFromFloat(s / 60);
-            try stdout.print("\x1b[90;3m~{d} m {d:.2} s\x1b[m", .{ min, @rem(s, 60) });
+            try stdout.print("\x1b[90;3m{d} m {d:.0} s\x1b[m", .{ min, @rem(s, 60) });
         }
     }
 }
