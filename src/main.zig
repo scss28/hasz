@@ -128,11 +128,13 @@ pub fn main() !void {
         fatal("list file path not provided (-l)", .{});
     };
 
-    try stdout.print("\x1b[90;3mloading list file...\x1b[m", .{});
-
+    try stdout.writeAll("\x1b[90;3mloading list file...\x1b[m");
     const bytes = try fs.cwd().readFileAlloc(gpa, list_path, 256_000_000);
     const entries = blk: {
-        var entries: std.ArrayListUnmanaged([]const u8) = .{};
+        var entries: std.ArrayListUnmanaged([]const u8) = try .initCapacity(
+            gpa,
+            1 + bytes.len / 9,
+        );
 
         var start: usize = 0;
         var i: usize = 0;
@@ -142,8 +144,9 @@ pub fn main() !void {
         };
 
         if (i > start) try entries.append(gpa, bytes[start..i]);
-        break :blk try entries.toOwnedSlice(gpa);
+        break :blk entries.items;
     };
+    try stdout.writeAll("\x1b[2K\r");
 
     const thread_count = m_thread_count orelse try Thread.getCpuCount();
 
